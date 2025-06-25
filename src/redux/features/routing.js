@@ -100,6 +100,9 @@ const routingSlice = createSlice({
         }
       });
     },
+    resetRoutingDetails: (state) => {
+      state.routingDetails = { data: null, loading: false, error: null };
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -163,4 +166,5 @@ export const {
   resetWaypoints,
   clearWayPoint,
   setMarkerPositionsOnMap,
+  resetRoutingDetails,
 } = routingSlice.actions;

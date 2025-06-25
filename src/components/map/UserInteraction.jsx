@@ -79,7 +79,7 @@ const UserInteraction = () => {
             L.latLng(markerPositionsOnMap[0][0], markerPositionsOnMap[0][1]),
             L.latLng(markerPositionsOnMap[1][0], markerPositionsOnMap[1][1]),
           ];
-    console.log("points",points)
+    console.log("points", points);
     const routingControl = L.Routing.control({
       waypoints: points,
       lineOptions: {
@@ -91,8 +91,6 @@ const UserInteraction = () => {
       fitSelectedRoutes: true,
       createMarker: () => null,
     }).addTo(map);
-
-    return () => map.removeControl(routingControl);
   }, [markerPositionsOnMap, map, routingDetails]);
   return (
     <>

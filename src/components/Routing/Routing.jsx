@@ -22,6 +22,7 @@ import { useMap } from "react-leaflet";
 import { Spinner } from "react-bootstrap";
 import { getMapCenter } from "../../redux/features/map-Info-new-slice";
 import { fetchRoutingDetails } from "../../redux/features/routing";
+import { resetRoutingDetails } from "../../redux/features/routing";
 import RoutingDetails from "./RoutingDetails";
 function Routing() {
   let dispatch = useDispatch();
@@ -68,6 +69,7 @@ function Routing() {
   };
   let handleDeleteRoutingAddress = (e, pointIndex) => {
     e.stopPropagation();
+    dispatch(resetRoutingDetails());
     dispatch(clearWayPoint(pointIndex));
     dispatch(
       setMarkerPositionsOnMap(
@@ -196,6 +198,7 @@ function Routing() {
                         })
                       )
                     );
+                    dispatch(resetRoutingDetails());
                     dispatch(setMarkerPositionsOnMap([]));
                     e.stopPropagation();
                   }}
