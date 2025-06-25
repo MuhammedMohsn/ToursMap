@@ -1,0 +1,35 @@
+.search-select-container {
+  border: 5px solid yellow;
+  height: 50px;
+  position: relative;
+  border-radius: 4px;
+}
+.icons-container {
+}
+.icons-container .flag-box {
+  width: 33.3%;
+  border-radius: 2px;
+}
+.icons-container .filter-box {
+  width: 33.3%;
+  border-radius: 2px;
+}
+.icons-container .search-box {
+  width: 33.3%;
+  border-radius: 2px;
+}
+.searched-places-container {
+  position: absolute;
+  top: 50px;
+  left: 55%;
+  z-index: 999;
+  width: 31%;
+  overflow: auto;
+  max-height: 250px;
+}
+.reset-search {
+  position: absolute;
+  top: 0%;
+  right: 5%;
+  color:blue
+}

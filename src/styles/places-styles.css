@@ -1,0 +1,8 @@
+.places-container {
+  height: 600px;
+  overflow: auto;
+}
+.places-container .places {
+  border-radius: 7px;
+  width: 85%;
+}

@@ -1,0 +1,49 @@
+.routing-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  padding: 10px 15px;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+}
+.routing-container {
+  height: 400px;
+  width: 400px;
+  z-index: 1000;
+  position: absolute;
+  top: 0px;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  right: -420px;
+  transition: right 1.5s ease-in-out;
+  overflow: auto;
+}
+.routing-container.show {
+  right: 20px;
+}
+.modes-container {
+  border-radius: 5px;
+}
+.mode {
+  border: 1px solid black;
+}
+.mode:hover {
+  background: gray;
+}
+.delete-address-btn {
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+  color: white;
+  position: absolute;
+  top: 20%;
+  right: 10px;
+}
+.disabled-icon {
+  pointer-events: none;
+  opacity:.5;
+}

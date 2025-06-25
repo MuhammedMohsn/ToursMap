@@ -1,0 +1,65 @@
+{
+  "homepage": "https://MuhammedMohsn.github.io/ToursMap",
+  "name": "tours-map",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@babel/preset-react": "^7.27.1",
+    "@locator/babel-jsx": "^0.4.4",
+    "@locator/runtime": "^0.4.4",
+    "@reduxjs/toolkit": "^2.8.2",
+    "@testing-library/jest-dom": "^5.16.3",
+    "@testing-library/react": "^12.1.4",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/leaflet-routing-machine": "^3.2.8",
+    "axios": "^1.9.0",
+    "bootstrap": "^5.3.6",
+    "gh-pages": "^6.3.0",
+    "leaflet": "^1.9.4",
+    "leaflet-routing-machine": "^3.2.12",
+    "moment": "^2.30.1",
+    "react": "^19.1.0",
+    "react-bootstrap": "^2.10.10",
+    "react-dnd": "^16.0.1",
+    "react-dom": "^19.1.0",
+    "react-embed": "^3.7.0",
+    "react-icons": "^5.5.0",
+    "react-leaflet": "^5.0.0",
+    "react-redux": "^9.2.0",
+    "react-scripts": "^5.0.1",
+    "react-select": "^5.10.1",
+    "react-social-media-embed": "^2.3.6",
+    "react-to-print": "^2.15.1",
+    "swiper": "^11.0.4",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "exports": {
+    "./helpers/esm/callSuper": "./helpers/esm/callSuper.js"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

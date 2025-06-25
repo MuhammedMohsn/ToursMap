@@ -1,0 +1,36 @@
+.swiper {
+    margin-top: 20px !important;
+}
+.swiper-slide {
+   border:2px solid red;
+}
+.card{
+    width: fit-content !important;
+    padding: 20px;
+}
+.swiper-pagination {
+    position: absolute;
+    text-align: center;
+    transition: 300ms opacity;
+    transform: translate3d(0, 0, 0);
+    z-index: 10;
+    bottom: -10px !important;
+
+}
+.swiper-button-prev{
+    background-color: gray;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.swiper-button-prev:after, .swiper-button-next:after {
+    font-size: 5px !important;
+    text-transform: none !important;
+    letter-spacing: 0;
+    font-variant: initial;
+    line-height: 1;
+    color: red;
+}
