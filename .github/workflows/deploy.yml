@@ -19,6 +19,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+          
+      - name: Run ESLint Fix
+        run: npx eslint . --fix
 
       - name: Install Dependencies
         run: npm install --force
