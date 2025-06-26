@@ -28,8 +28,9 @@ function Routing() {
   const { user } = useSelector((state) => state.map);
   let map = useMap();
 
-  const { show, mode, waypoints, markerPositionsOnMap, routingDetails } =
-    useSelector((state) => state.routing);
+  const { show, mode, waypoints, routingDetails } = useSelector(
+    (state) => state.routing
+  );
 
   const modes = [
     { id: 1, mode: "drive", icon: <FaCarSide /> },
@@ -86,6 +87,7 @@ function Routing() {
               [key]: {
                 ...waypoints[key],
                 address: res?.payload?.display_name,
+                coords: [user?.location?.lat, user?.location?.lng],
               },
             })
           );
@@ -137,6 +139,7 @@ function Routing() {
         mode,
         waypoints: Object.values(waypoints)
           ?.map((point) => {
+            console.log("point",point)
             return `${point?.coords[0]},${point?.coords[1]}`;
           })
           .join("|"),
@@ -158,7 +161,7 @@ function Routing() {
                 dispatch(setShow(true));
                 const updatedWaypoints = Object.entries(waypoints).reduce(
                   (acc, [key, value]) => {
-                    acc[key] = { ...value, address: "" };
+                    acc[key] = { ...value, address: "",coords:[] };
                     return acc;
                   },
                   {}
@@ -179,7 +182,7 @@ function Routing() {
                     dispatch(setShow(false));
                     const updatedWaypoints = Object.entries(waypoints).reduce(
                       (acc, [key, value]) => {
-                        acc[key] = { ...value, address: "" };
+                        acc[key] = { ...value, address: "",coords:[] };
                         return acc;
                       },
                       {}

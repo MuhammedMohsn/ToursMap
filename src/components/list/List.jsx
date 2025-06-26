@@ -78,6 +78,7 @@ function List() {
       updatedWaypoints[point.waypointKey] = {
         ...updatedWaypoints[point.waypointKey],
         address: res?.payload?.display_name,
+        coords: [point.lat, point.lon],
       };
     }
     dispatch(setWaypoints(updatedWaypoints));

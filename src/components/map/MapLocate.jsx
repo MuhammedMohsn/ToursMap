@@ -62,6 +62,5 @@ export default function MapLocate() {
 
     dispatch(fetchPlacesListByBBox({ params, apiKey }));
   }, [category?.value, dispatch, mapInfo]);
-
   return null;
 }

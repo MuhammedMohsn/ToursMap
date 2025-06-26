@@ -8,7 +8,7 @@ import Routing from "./components/Routing/Routing";
 import UserInteraction from "./components/map/UserInteraction";
 function MyMap() {
   const { user } = useSelector((state) => state.map);
-  const { show, markerPositionsOnMap } = useSelector((state) => state.routing);
+  const { show, waypoints } = useSelector((state) => state.routing);
   return (
     <>
       {!Object.values(user?.location)?.includes(null) && (
@@ -31,12 +31,11 @@ function MyMap() {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <Routing />
-            {markerPositionsOnMap?.length === 0 &&
-              !Object.values(user?.location)?.includes(null) && (
-                <UserLocation />
-              )}
+            {!show && !Object.values(user?.location)?.includes(null) && (
+              <UserLocation />
+            )}
             <MapLocate />
-            {markerPositionsOnMap?.length === 0 && <Locations />}
+            {!show && <Locations />}
             {show && <UserInteraction />}
             <ButtonLocator />
           </MapContainer>
