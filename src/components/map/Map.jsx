@@ -1,12 +1,12 @@
 import { MapContainer, TileLayer } from "react-leaflet";
 import UserLocation from "./UserLocation";
-import MapLocate from ".//MapLocate";
+import MapLocate from "./MapLocate";
 import Locations from "./Locations";
 import { useSelector } from "react-redux";
 import ButtonLocator from "./ButtonLocator";
 import Routing from "../Routing/Routing";
 import UserInteraction from "./UserInteraction";
-function MyMap() {
+function Map() {
   const { user } = useSelector((state) => state.map);
   const { show } = useSelector((state) => state.routing);
   return (
@@ -45,4 +45,4 @@ function MyMap() {
   );
 }
 
-export default MyMap;
+export default Map;
