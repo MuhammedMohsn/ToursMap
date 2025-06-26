@@ -5,6 +5,12 @@ import { FaWalking } from "react-icons/fa";
 import { FaCarSide } from "react-icons/fa";
 import { FaTruck } from "react-icons/fa";
 import { IoIosBicycle } from "react-icons/io";
+import { FaDiamondTurnRight } from "react-icons/fa6";
+import { BsFillSignTurnLeftFill } from "react-icons/bs";
+import { MdSouth } from "react-icons/md";
+import { MdNorth } from "react-icons/md";
+import { CiLocationOn } from "react-icons/ci";
+
 function RoutingDetails() {
   let showModeIcon = (mode, classNames) => {
     switch (mode) {
@@ -31,7 +37,7 @@ function RoutingDetails() {
   return (
     <>
       <div
-        className="d-flex align-items-center"
+        className="d-flex align-items-center mb-5"
         style={{ height: "100px", width: "100%" }}
       >
         <span className="my-2">{showModeIcon(mode, "fs-1")}</span>
@@ -59,6 +65,26 @@ function RoutingDetails() {
           </div>
         </div>
       </div>
+      {routingDetails?.data?.features[0]?.properties?.legs[0]?.steps?.map(
+        (step) => {
+          return (
+            <div className="d-flex align-items-center fw-bolder">
+              {step?.instruction?.text?.toLowerCase().includes("left") ? (
+                <BsFillSignTurnLeftFill className="mx-2 fs-5" />
+              ) : step?.instruction?.text?.toLowerCase().includes("south") ? (
+                <MdSouth className="mx-2 fs-5" />
+              ) : step?.instruction?.text?.toLowerCase().includes("right") ? (
+                <FaDiamondTurnRight className="mx-2 fs-5" />
+              ) : step?.instruction?.text?.toLowerCase().includes("north") ? (
+                <MdNorth className="mx-2 fs-5" />
+              ) : (
+                <CiLocationOn className="mx-2 fs-5" />
+              )}
+              <span className="fs-5">{step?.instruction?.text}</span>
+            </div>
+          );
+        }
+      )}
     </>
   );
 }
