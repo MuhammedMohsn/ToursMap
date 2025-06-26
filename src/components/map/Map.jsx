@@ -1,15 +1,14 @@
 import { MapContainer, TileLayer } from "react-leaflet";
-import UserLocation from "./components/map/UserLocation";
-import MapLocate from "./components/map/MapLocate";
-import Locations from "./components/map/Locations";
+import UserLocation from "./UserLocation";
+import MapLocate from ".//MapLocate";
+import Locations from "./Locations";
 import { useSelector } from "react-redux";
-import ButtonLocator from "./components/map/ButtonLocator";
-import Routing from "./components/Routing/Routing";
-import UserInteraction from "./components/map/UserInteraction";
+import ButtonLocator from "./ButtonLocator";
+import Routing from "../Routing/Routing";
+import UserInteraction from "./UserInteraction";
 function MyMap() {
   const { user } = useSelector((state) => state.map);
   const { show } = useSelector((state) => state.routing);
-  console.log("show",show)
   return (
     <>
       {!Object.values(user?.location)?.includes(null) && (
