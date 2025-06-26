@@ -25,19 +25,19 @@ function List() {
   const getCategoryIcon = (category) => {
     switch (category?.label) {
       case "Hotels":
-        return <FaHotel className="mt-2" />;
+        return <FaHotel className="mt-2 fs-3" />;
       case "Banks":
-        return <FaUniversity className="mt-2" />;
+        return <FaUniversity className="mt-2 fs-3" />;
       case "Malls":
-        return <FaShoppingCart className="mt-2" />;
+        return <FaShoppingCart className="mt-2 fs-3" />;
       case "Restaurants":
-        return <FaUtensils className="mt-2" />;
+        return <FaUtensils className="mt-2 fs-3" />;
       case "ATM":
-        return <FaMoneyCheckAlt className="mt-2" />;
+        return <FaMoneyCheckAlt className="mt-2 fs-3" />;
       case "Museums":
-        return <MdMuseum className="mt-2" />;
+        return <MdMuseum className="mt-2 fs-3" />;
       default:
-        return <FaQuestionCircle className="mt-2" />;
+        return <FaQuestionCircle className="mt-2 fs-3" />;
     }
   };
   const handlePlaceWithUserLocationRouteOnMap = async (place, userLocation) => {
@@ -130,7 +130,7 @@ function List() {
                         >
                           {getCategoryIcon(category)}
                           <div className="fw-bolder fs-6">
-                            <span>{place?.name} </span>
+                            <span className="mx-1">{place?.name} </span>
                           </div>
                           <FaRoute
                             className="cursor-pointer fs-4"

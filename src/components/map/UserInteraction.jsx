@@ -64,7 +64,7 @@ const UserInteraction = () => {
   console.log(
     "poly",
     routePoints?.map((point) => {
-      return { lat: point[0], lng: point[1] };
+      return point;
     })
   );
   return (
@@ -73,7 +73,7 @@ const UserInteraction = () => {
         <>
           <Polyline
             positions={routePoints?.map((point) => {
-              return [point[0], point[1]];
+              return [point[1],point[0]];
             })}
             color={"red"}
             weight={"4"}
