@@ -1,10 +1,10 @@
 import "./App.css";
 import { Fragment, useEffect } from "react";
-import MyMap from "./MyMap";
 import SelectWithSearch from "./components/search-with-filter/SelectWithSearch";
 import { getUserLocation } from "./redux/features/map-Info-new-slice";
 import { useDispatch, useSelector } from "react-redux";
 import List from "./components/list/List";
+import Map from "./components/map/Map";
 function App() {
   let dispatch = useDispatch();
   useEffect(() => {
@@ -18,8 +18,10 @@ function App() {
       );
     }
   }, [dispatch]);
-  let userLocation=useSelector((state)=>{return state?.map?.user?.location})
-  console.log("userLocation",userLocation)
+  let userLocation = useSelector((state) => {
+    return state?.map?.user?.location;
+  });
+  console.log("userLocation", userLocation);
   return (
     <Fragment>
       <div className="App">
@@ -33,7 +35,7 @@ function App() {
             <List />
           </div>
           <div className=" col-md-9 col-sm-12">
-            <MyMap />
+            <Map />
           </div>
         </div>
       </div>
