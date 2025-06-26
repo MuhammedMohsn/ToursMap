@@ -1,13 +1,10 @@
-import { useMapEvents, Marker } from "react-leaflet";
+import { useMapEvents, Marker, Popup ,Polyline} from "react-leaflet";
 import L from "leaflet";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUserLocationDetails,
   setWaypoints,
 } from "../../redux/features/routing";
-import "leaflet-routing-machine";
-import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
-import { Polyline } from "react-leaflet";
 
 const UserInteraction = () => {
   let dispatch = useDispatch();
@@ -60,24 +57,21 @@ const UserInteraction = () => {
   });
   let routePoints =
     routingDetails?.data?.features[0]?.geometry?.coordinates?.flat();
-  console.log("details", routePoints);
-  console.log(
-    "poly",
-    routePoints?.map((point) => {
-      return point;
-    })
-  );
   return (
     <>
       {routePoints?.length > 0 && (
         <>
-          <Polyline
-            positions={routePoints?.map((point) => {
-              return [point[1],point[0]];
-            })}
-            color={"red"}
-            weight={"4"}
-          />
+          {routingDetails?.data?.features[0]?.properties?.distance > 20000 ? (
+            <></>
+          ) : (
+            <Polyline
+              positions={routePoints?.map((point) => {
+                return [point[1], point[0]];
+              })}
+              color={"red"}
+              weight={"4"}
+            />
+          )}
         </>
       )}
       {Object.entries(waypoints)?.map(
@@ -91,7 +85,12 @@ const UserInteraction = () => {
                   position={waypointValues?.coords}
                   icon={dotIcon}
                   riseOnHover={true}
-                ></Marker>
+                >
+                  {" "}
+                  <Popup>
+                    <span>{waypointValues?.address}</span>
+                  </Popup>
+                </Marker>
               ) : (
                 <></>
               )}

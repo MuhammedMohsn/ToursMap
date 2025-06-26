@@ -115,6 +115,7 @@ function Routing() {
           ...waypoints[key],
           address: formatted_address,
           showSuggestedPlaces: false,
+          coords: [lat, lng],
         },
       })
     );
@@ -130,7 +131,7 @@ function Routing() {
   };
   useEffect(() => {
     let isAllWaypointHasAddress = Object.entries(waypoints).every(
-      ([_, value]) => value.address
+      ([_, value]) => value.address && value?.coords?.length == 2
     );
     if (isAllWaypointHasAddress) {
       let apiKey = process.env.REACT_APP_RAPID_API_KEY_1;
@@ -146,7 +147,6 @@ function Routing() {
       dispatch(fetchRoutingDetails({ params, apiKey }));
     }
   }, [waypoints, dispatch, mode]);
-  console.log("routingDetails?.data", routingDetails?.data);
   return (
     <>
       <div className="routing">
@@ -160,7 +160,7 @@ function Routing() {
                 dispatch(setShow(true));
                 const updatedWaypoints = Object.entries(waypoints).reduce(
                   (acc, [key, value]) => {
-                    acc[key] = { ...value, address: "",coords:[] };
+                    acc[key] = { ...value, address: "", coords: [] };
                     return acc;
                   },
                   {}
@@ -181,7 +181,7 @@ function Routing() {
                     dispatch(setShow(false));
                     const updatedWaypoints = Object.entries(waypoints).reduce(
                       (acc, [key, value]) => {
-                        acc[key] = { ...value, address: "",coords:[] };
+                        acc[key] = { ...value, address: "", coords: [] };
                         return acc;
                       },
                       {}
@@ -238,14 +238,12 @@ function Routing() {
                       {waypoints[waypoint]?.address && (
                         <>
                           {" "}
-                          <div
+                          <TiDelete
                             onClick={(e) => {
                               handleDeleteRoutingAddress(e, waypoint);
                             }}
-                            className="delete-address-btn bg-danger"
-                          >
-                            x
-                          </div>
+                            className="text-danger fs-3 cursor-pointer delete-address-btn"
+                          />
                         </>
                       )}
                     </div>
