@@ -14,7 +14,6 @@ export const fetchPlacesListByBBox = createAsyncThunk(
       const response = await placesListByBBox(data?.params, data?.apiKey);
       return response;
     } catch (error) {
-      console.log("error",error)
       return thunkApi.rejectWithValue(error);
     }
   }
