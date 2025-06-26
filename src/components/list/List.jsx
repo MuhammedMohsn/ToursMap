@@ -13,6 +13,7 @@ import { MdMuseum } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { setShow, setWaypoints } from "../../redux/features/routing";
 import { fetchUserLocationDetails } from "../../redux/features/routing";
+import { useState } from "react";
 function List() {
   let dispatch = useDispatch();
   const { placesOnMap } = useSelector((state) => state.map);
@@ -83,7 +84,15 @@ function List() {
     }
     dispatch(setWaypoints(updatedWaypoints));
   };
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+  const filteredPlaces = placesOnMap?.data?.filter((item) => item?.name);
+  const totalPages = Math.ceil(filteredPlaces?.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedPlaces = filteredPlaces?.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
   return (
     <div className="mx-auto places-container mb-3">
       {placesOnMap?.loading ? (
@@ -113,32 +122,47 @@ function List() {
                 placesOnMap?.data?.length > 0 && (
                   <>
                     {" "}
-                    {placesOnMap?.data
-                      ?.filter((item) => {
-                        return item?.name;
-                      })
-                      ?.map((place, index) => {
-                        return (
-                          <div
-                            key={index}
-                            className="places mx-auto mt-2 py-4 px-3 d-flex justify-content-between align-items-center bg-primary text-dark"
-                          >
-                            {getCategoryIcon(category)}
-                            <div className="fw-bolder fs-6">
-                              <span>{place?.name} </span>
-                            </div>
-                            <FaRoute
-                              className="cursor-pointer fs-4"
-                              onClick={() => {
-                                handlePlaceWithUserLocationRouteOnMap(
-                                  place?.point,
-                                  location
-                                );
-                              }}
-                            />
+                    {paginatedPlaces?.map((place, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="places mx-auto mt-2 py-4 px-3 d-flex justify-content-between align-items-center bg-primary text-dark"
+                        >
+                          {getCategoryIcon(category)}
+                          <div className="fw-bolder fs-6">
+                            <span>{place?.name} </span>
                           </div>
-                        );
-                      })}
+                          <FaRoute
+                            className="cursor-pointer fs-4"
+                            onClick={() => {
+                              handlePlaceWithUserLocationRouteOnMap(
+                                place?.point,
+                                location
+                              );
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                    <div className="d-flex justify-content-center mt-3 gap-2">
+                      <button
+                        className="btn btn-sm btn-secondary"
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage((prev) => prev - 1)}
+                      >
+                        Prev
+                      </button>
+                      <span className="align-self-center">
+                        {currentPage} / {totalPages}
+                      </span>
+                      <button
+                        className="btn btn-sm btn-secondary"
+                        disabled={currentPage === totalPages}
+                        onClick={() => setCurrentPage((prev) => prev + 1)}
+                      >
+                        Next
+                      </button>
+                    </div>
                   </>
                 )}
               {placesOnMap?.data?.length === 0 && (
