@@ -9,8 +9,10 @@ import {
 import "leaflet-routing-machine";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import { useEffect } from "react";
+import { useState, useRef } from "react";
 const UserInteraction = () => {
   let map = useMap();
+  const routingControlRef = useRef(null);
   let dispatch = useDispatch();
   const { markerPositionsOnMap, waypoints, routingDetails } = useSelector(
     (state) => state.routing
@@ -68,20 +70,19 @@ const UserInteraction = () => {
       }
     },
   });
+
   useEffect(() => {
-    if (!map || markerPositionsOnMap.length !== 2) return;
-    let points =
-      routingDetails?.data != null
-        ? markerPositionsOnMap?.map((point, index) => {
-            return [L.latLng(point[0], point[1])];
-          })
-        : [
-            L.latLng(markerPositionsOnMap[0][0], markerPositionsOnMap[0][1]),
-            L.latLng(markerPositionsOnMap[1][0], markerPositionsOnMap[1][1]),
-          ];
-    console.log("points", points);
+    if (map && routingControlRef?.current) {
+      map.removeControl(routingControlRef.current);
+      routingControlRef.current = null;
+      return;
+    }
     const routingControl = L.Routing.control({
-      waypoints: points,
+      waypoints: routingDetails?.data?.features[0]?.geometry?.coordinates
+        ?.flat()
+        ?.map((point, index) => {
+          return L.latLng(point[0], point[1]);
+        }),
       lineOptions: {
         styles: [{ color: "#0074D9", weight: 5 }],
       },
@@ -91,7 +92,14 @@ const UserInteraction = () => {
       fitSelectedRoutes: true,
       createMarker: () => null,
     }).addTo(map);
-  }, [markerPositionsOnMap, map, routingDetails]);
+    routingControlRef.current = routingControl;
+    return () => {
+      if (routingControlRef.current) {
+        map.removeControl(routingControlRef.current);
+        routingControlRef.current = null;
+      }
+    };
+  }, [routingDetails, map]);
   return (
     <>
       {markerPositionsOnMap?.map((pos, idx) => (

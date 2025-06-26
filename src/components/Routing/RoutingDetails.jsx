@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
 import { Spinner } from "react-bootstrap";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FaWalking } from "react-icons/fa";
 import { FaCarSide } from "react-icons/fa";
 import { FaTruck } from "react-icons/fa";
 import { IoIosBicycle } from "react-icons/io";
-import { setMarkerPositionsOnMap } from "../../redux/features/routing";
 function RoutingDetails() {
   let showModeIcon = (mode, classNames) => {
     switch (mode) {
@@ -22,14 +21,6 @@ function RoutingDetails() {
     }
   };
   const { mode, routingDetails } = useSelector((state) => state.routing);
-  console.log("routingDetails", routingDetails);
-  useEffect(() => {
-    if (routingDetails?.data) {
-      let waypoints = routingDetails?.data?.features[0]?.geometry?.coordinates;
-      console.log("routes", waypoints);
-      setMarkerPositionsOnMap(waypoints);
-    }
-  }, [routingDetails, mode]);
   return (
     <>
       <div
