@@ -66,19 +66,29 @@ function RoutingDetails() {
         </div>
       </div>
       {routingDetails?.data?.features[0]?.properties?.legs[0]?.steps?.map(
-        (step) => {
+        (step, index) => {
+          let text = step?.instruction?.text;
           return (
-            <div className="d-flex align-items-center fw-bolder">
-              {step?.instruction?.text?.toLowerCase().includes("left") ? (
+            <div className="d-flex align-items-center fw-bolder" key={index}>
+              {typeof text === "string" &&
+              text?.toLowerCase()?.includes("left") ? (
                 <BsFillSignTurnLeftFill className="mx-2 fs-5" />
-              ) : step?.instruction?.text?.toLowerCase().includes("south") ? (
+              ) : typeof text === "string" &&
+                text?.toLowerCase()?.includes("south") ? (
                 <MdSouth className="mx-2 fs-5" />
-              ) : step?.instruction?.text?.toLowerCase().includes("right") ? (
+              ) : typeof text === "string" &&
+                text?.toLowerCase()?.includes("right") ? (
                 <FaDiamondTurnRight className="mx-2 fs-5" />
-              ) : step?.instruction?.text?.toLowerCase().includes("north") ? (
+              ) : typeof text === "string" &&
+                text?.toLowerCase()?.includes("north") ? (
                 <MdNorth className="mx-2 fs-5" />
-              ) : (
+              ) : typeof text === "string" &&
+                text
+                  ?.toLowerCase()
+                  ?.includes("You have arrived at your destination.") ? (
                 <CiLocationOn className="mx-2 fs-5" />
+              ) : (
+                <></>
               )}
               <span className="fs-5">{step?.instruction?.text}</span>
             </div>
