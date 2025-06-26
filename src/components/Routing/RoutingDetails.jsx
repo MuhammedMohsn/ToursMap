@@ -21,6 +21,13 @@ function RoutingDetails() {
     }
   };
   const { mode, routingDetails } = useSelector((state) => state.routing);
+  function formatTime(seconds) {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+
+    return `${hrs} hours ${mins} minutes ${secs} seconds`;
+  }
   return (
     <>
       <div
@@ -33,13 +40,21 @@ function RoutingDetails() {
           <div className="d-flex justify-content-between">
             <span className="text-secondary fs-5 mx-2">distance is :</span>{" "}
             <span className="mx-2 fs-5">
-              {routingDetails?.data?.features[0]?.properties?.distance} KM
+              {routingDetails?.data?.features[0]?.properties?.distance > 1000
+                ? `${Math.floor(
+                    routingDetails?.data?.features[0]?.properties?.distance /
+                      1000
+                  )} KM ${
+                    routingDetails?.data?.features[0]?.properties?.distance %
+                    1000
+                  } M`
+                : `${routingDetails?.data?.features[0]?.properties?.distance} M`}
             </span>
           </div>
           <div className="d-flex justify-content-between">
             <span className="text-secondary fs-5 mx-2">time is :</span>{" "}
             <span className="mx-2 fs-5">
-              {routingDetails?.data?.features[0]?.properties?.time}
+              {formatTime(routingDetails?.data?.features[0]?.properties?.time)}
             </span>
           </div>
         </div>

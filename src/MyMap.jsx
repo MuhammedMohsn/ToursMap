@@ -8,7 +8,8 @@ import Routing from "./components/Routing/Routing";
 import UserInteraction from "./components/map/UserInteraction";
 function MyMap() {
   const { user } = useSelector((state) => state.map);
-  const { show, waypoints } = useSelector((state) => state.routing);
+  const { show } = useSelector((state) => state.routing);
+  console.log("show",show)
   return (
     <>
       {!Object.values(user?.location)?.includes(null) && (

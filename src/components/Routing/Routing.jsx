@@ -139,7 +139,6 @@ function Routing() {
         mode,
         waypoints: Object.values(waypoints)
           ?.map((point) => {
-            console.log("point",point)
             return `${point?.coords[0]},${point?.coords[1]}`;
           })
           .join("|"),
