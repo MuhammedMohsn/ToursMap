@@ -46,7 +46,7 @@ function List() {
   };
   let [addresses, setAddresses] = useState([]);
   let handlePlaceWithUserLocationRouteOnMap = (place, userLocation) => {
-    setAddresses([])
+    setAddresses([]);
     dispatch(setShow(true));
     let places = [
       { lat: userLocation?.lat, lon: userLocation?.lng },
@@ -72,7 +72,6 @@ function List() {
       );
     });
   };
-  console.log("addresses", addresses);
   useEffect(() => {
     addresses?.forEach((address, addressIndex) => {
       dispatch(
@@ -117,28 +116,32 @@ function List() {
                 placesOnMap?.data?.length > 0 && (
                   <>
                     {" "}
-                    {placesOnMap?.data?.map((place, index) => {
-                      return (
-                        <div
-                          key={index}
-                          className="places mx-auto mt-2 py-4 px-3 d-flex justify-content-between align-items-center bg-primary text-dark"
-                        >
-                          {getCategoryIcon(category)}
-                          <div className="fw-bolder fs-6">
-                            <span>{place?.name} </span>
+                    {placesOnMap?.data
+                      ?.filter((item) => {
+                        return item?.name;
+                      })
+                      ?.map((place, index) => {
+                        return (
+                          <div
+                            key={index}
+                            className="places mx-auto mt-2 py-4 px-3 d-flex justify-content-between align-items-center bg-primary text-dark"
+                          >
+                            {getCategoryIcon(category)}
+                            <div className="fw-bolder fs-6">
+                              <span>{place?.name} </span>
+                            </div>
+                            <FaRoute
+                              className="cursor-pointer fs-4"
+                              onClick={() => {
+                                handlePlaceWithUserLocationRouteOnMap(
+                                  place?.point,
+                                  location
+                                );
+                              }}
+                            />
                           </div>
-                          <FaRoute
-                            className="cursor-pointer fs-4"
-                            onClick={() => {
-                              handlePlaceWithUserLocationRouteOnMap(
-                                place?.point,
-                                location
-                              );
-                            }}
-                          />
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
                   </>
                 )}
               {placesOnMap?.data?.length === 0 && (

@@ -3,7 +3,7 @@ import { Fragment, useEffect } from "react";
 import MyMap from "./MyMap";
 import SelectWithSearch from "./components/search-with-filter/SelectWithSearch";
 import { getUserLocation } from "./redux/features/map-Info-new-slice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import List from "./components/list/List";
 function App() {
   let dispatch = useDispatch();
@@ -18,6 +18,8 @@ function App() {
       );
     }
   }, [dispatch]);
+  let userLocation=useSelector((state)=>{return state?.map?.user?.location})
+  console.log("userLocation",userLocation)
   return (
     <Fragment>
       <div className="App">

@@ -17,15 +17,17 @@ const UserLocation = () => {
     shadowSize: [41, 41],
   });
   useEffect(() => {
-    map.setView([user.location.lat, user.location.lng], 15);
-    dispatch(
-      getMapInfo({
-        lat_min: map.getBounds().getSouthWest().lat,
-        lon_min: map.getBounds().getSouthWest().lng,
-        lat_max: map.getBounds().getNorthEast().lat,
-        lon_max: map.getBounds().getNorthEast().lng,
-      })
-    );
+    if (user.location.lng && user.location.lat) {
+      map?.flyTo([user?.location?.lat, user?.location?.lng], map.getZoom());
+      dispatch(
+        getMapInfo({
+          lat_min: map.getBounds().getSouthWest().lat,
+          lon_min: map.getBounds().getSouthWest().lng,
+          lat_max: map.getBounds().getNorthEast().lat,
+          lon_max: map.getBounds().getNorthEast().lng,
+        })
+      );
+    }
   }, [map, user?.location?.lat, user?.location?.lng, dispatch]);
 
   return (

@@ -10,6 +10,7 @@ export default function MapLocate() {
   const { category } = useSelector((state) => state.searchFilter);
   const mapCenter = useSelector((state) => state?.map?.mapCenter?.location);
   const mapInfo = useSelector((state) => state?.map?.map);
+  // this logic to detect if map center or making zoom in/out call detect bounds of map , then call api
   const updateMapInfo = useCallback(() => {
     const bounds = map.getBounds();
     dispatch(

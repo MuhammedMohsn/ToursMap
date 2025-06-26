@@ -32,7 +32,6 @@ const UserInteraction = () => {
         !e.originalEvent.target.closest(".routing")
       ) {
         if (markerPositionsOnMap.length === 2) {
-          console.log("enteted here");
           return;
         }
         const { lat, lng } = e.latlng;
@@ -80,7 +79,7 @@ const UserInteraction = () => {
     const routingControl = L.Routing.control({
       waypoints: routingDetails?.data?.features[0]?.geometry?.coordinates
         ?.flat()
-        ?.map((point, index) => {
+        ?.map((point) => {
           return L.latLng(point[0], point[1]);
         }),
       lineOptions: {

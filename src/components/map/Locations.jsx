@@ -1,9 +1,7 @@
-import React, { Fragment, useEffect } from "react";
 import { Marker, Popup, useMap } from "react-leaflet";
 import { useSelector } from "react-redux";
 import L from "leaflet";
 function Locations() {
-  let map = useMap();
   const { placesOnMap } = useSelector((state) => state.map);
   const dotIcon = new L.Icon({
     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -12,17 +10,11 @@ function Locations() {
     popupAnchor: [1, -34],
     shadowSize: [41, 41],
   });
-  const { waypoints } = useSelector(
-    (state) => state.routing
-  );
-  let isEmptyWayPoints = waypoints?.every((waypoint) => {
-    return waypoint?.address === "";
-  });
+  // here i display points that retrieved from endpoint , if i write in routing fields address, remove the places
   return (
     <>
       {" "}
-      {isEmptyWayPoints &&
-        Array.isArray(placesOnMap?.data) &&
+      {Array.isArray(placesOnMap?.data) &&
         placesOnMap?.data
           ?.filter((place) => place.point.lat && place.point.lon)
           ?.map((place) => {
