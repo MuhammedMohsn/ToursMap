@@ -5,22 +5,21 @@ import routing from "../../api/routing/routing";
 const initialState = {
   show: false,
   mode: "drive",
-  markerPositionsOnMap: [],
   currentUserLocationDetails: { data: {}, loading: false, error: null },
-  waypoints: [
-    {
-      point: "1",
+  waypoints: {
+    "first waypoint": {
       address: "",
       searchedLocations: { data: [], loading: false, error: null },
       showSuggestedPlaces: false,
+      coords: [],
     },
-    {
-      point: "2",
+    "second waypoint": {
       address: "",
       searchedLocations: { data: [], loading: false, error: null },
       showSuggestedPlaces: false,
+      coords: [],
     },
-  ],
+  },
   routingDetails: { data: null, loading: false, error: null },
 };
 export const fetchUserLocationDetails = createAsyncThunk(
@@ -39,7 +38,7 @@ export const fetchAllSearchedLocationsForWaypoint = createAsyncThunk(
   async (data, thunkApi) => {
     try {
       const response = await geocoding(data?.params, data?.apiKey);
-      return { index: data?.index, value: response };
+      return { key: data?.key, value: response };
     } catch (error) {
       return thunkApi.rejectWithValue(error);
     }
@@ -79,26 +78,41 @@ const routingSlice = createSlice({
     setWaypoints: (state, action) => {
       state.waypoints = action?.payload;
     },
-    setMarkerPositionsOnMap: (state, action) => {
-      state.markerPositionsOnMap = action?.payload;
-    },
     resetWaypoints: (state) => {
-      state.waypoints = state.waypoints?.map((waypoint) => {
-        return { ...waypoint, address: "" };
-      });
+      const updatedWaypoints = {};
+      for (const key in state.waypoints) {
+        if (state.waypoints.hasOwnProperty(key)) {
+          updatedWaypoints[key] = {
+            ...state.waypoints[key],
+            address: "",
+            showSuggestedPlaces: false,
+            searchedLocations: {
+              data: [],
+              loading: false,
+              error: null,
+            },
+            coords: [],
+          };
+        }
+      }
+      state.waypoints = updatedWaypoints;
     },
     setShowSuggestedPlaces: (state, action) => {
-      const { index, value } = action.payload;
-      state.waypoints[index].showSuggestedPlaces = value;
+      const { key, value } = action.payload;
+      state.waypoints[key].showSuggestedPlaces = value;
     },
     clearWayPoint: (state, action) => {
-      state.waypoints = state.waypoints.map((waypoint, index) => {
-        if (index === action.payload) {
-          return { ...waypoint, address: "" };
-        } else {
-          return waypoint;
-        }
-      });
+      const { key } = action.payload;
+      if (state.waypoints[key]) {
+        state.waypoints[key].address = "";
+        state.waypoints[key].showSuggestedPlaces = false;
+        state.waypoints[key].searchedLocations = {
+          data: [],
+          loading: false,
+          error: null,
+        };
+        state.waypoints[key].coords = [];
+      }
     },
     resetRoutingDetails: (state) => {
       state.routingDetails = { data: null, loading: false, error: null };
@@ -120,27 +134,27 @@ const routingSlice = createSlice({
       .addCase(
         fetchAllSearchedLocationsForWaypoint.pending,
         (state, action) => {
-          const { index } = action.meta.arg;
-          state.waypoints[index].searchedLocations.loading = true;
-          state.waypoints[index].searchedLocations.error = null;
+          const { key } = action.meta.arg;
+          state.waypoints[key].searchedLocations.loading = true;
+          state.waypoints[key].searchedLocations.error = null;
         }
       )
       .addCase(
         fetchAllSearchedLocationsForWaypoint.fulfilled,
         (state, action) => {
-          const { index, value } = action.payload;
-          state.waypoints[index].searchedLocations.loading = false;
-          state.waypoints[index].searchedLocations.data =
+          const { key, value } = action.payload;
+          state.waypoints[key].searchedLocations.loading = false;
+          state.waypoints[key].searchedLocations.data =
             value?.data?.results || [];
-          state.waypoints[index].searchedLocations.error = null;
+          state.waypoints[key].searchedLocations.error = null;
         }
       )
       .addCase(
         fetchAllSearchedLocationsForWaypoint.rejected,
         (state, action) => {
-          const { index } = action.meta.arg;
-          state.waypoints[index].searchedLocations.loading = false;
-          state.waypoints[index].searchedLocations.error = "error";
+          const { key } = action.meta.arg;
+          state.waypoints[key].searchedLocations.loading = false;
+          state.waypoints[key].searchedLocations.error = "error";
         }
       )
       .addCase(fetchRoutingDetails.pending, (state) => {
@@ -165,6 +179,5 @@ export const {
   setShowSuggestedPlaces,
   resetWaypoints,
   clearWayPoint,
-  setMarkerPositionsOnMap,
   resetRoutingDetails,
 } = routingSlice.actions;

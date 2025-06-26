@@ -2,21 +2,19 @@ import { useMapEvents, Marker, useMap } from "react-leaflet";
 import L from "leaflet";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  setMarkerPositionsOnMap,
   fetchUserLocationDetails,
   setWaypoints,
 } from "../../redux/features/routing";
 import "leaflet-routing-machine";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import { useEffect } from "react";
-import { useState, useRef } from "react";
+import { useRef } from "react";
 const UserInteraction = () => {
   let map = useMap();
   const routingControlRef = useRef(null);
   let dispatch = useDispatch();
-  const { markerPositionsOnMap, waypoints, routingDetails } = useSelector(
-    (state) => state.routing
-  );
+  const { waypoints, routingDetails } = useSelector((state) => state.routing);
+  console.log("waypoints", waypoints);
   const dotIcon = new L.Icon({
     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
     iconSize: [25, 41],
@@ -27,46 +25,39 @@ const UserInteraction = () => {
 
   useMapEvents({
     click: (e) => {
-      if (
+      let isMapClicked =
         e.originalEvent.target.closest(".leaflet-container") &&
-        !e.originalEvent.target.closest(".routing")
-      ) {
-        if (markerPositionsOnMap.length === 2) {
-          return;
-        }
-        const { lat, lng } = e.latlng;
-        const newMarker = [lat, lng];
-        const updatedMarkers = [...markerPositionsOnMap, newMarker];
-        console.log("updatedMarkers", updatedMarkers);
-        dispatch(setMarkerPositionsOnMap(updatedMarkers));
-        updatedMarkers.forEach(async (position, positionIndex) => {
-          let params = {
-            lat: position[0],
-            lon: position[1],
-            "accept-language": "en",
-          };
-          let apiKey = process.env.REACT_APP_RAPID_API_KEY_1;
-
-          await dispatch(fetchUserLocationDetails({ params, apiKey })).then(
-            (res) => {
-              dispatch(
-                setWaypoints(
-                  waypoints?.map((point, index) => {
-                    if (index === positionIndex) {
-                      return {
-                        ...point,
-                        address: res?.payload?.display_name,
-                      };
-                    } else {
-                      return point;
-                    }
-                  })
-                )
-              );
-            }
-          );
-        });
+        !e.originalEvent.target.closest(".routing");
+      if (!isMapClicked) {
+        return;
       }
+      if (Object.entries(waypoints).every(([_, value]) => value.address)) {
+        return;
+      }
+      const { lat, lng } = e.latlng;
+      const newMarker = [lat, lng];
+      let firstEmptyWaypoint = Object.entries(waypoints).find(
+        ([_, value]) => !value.address
+      )?.[0];
+      let params = {
+        lat: newMarker[0],
+        lon: newMarker[1],
+        "accept-language": "en",
+      };
+      let apiKey = process.env.REACT_APP_RAPID_API_KEY_1;
+
+      dispatch(fetchUserLocationDetails({ params, apiKey })).then((res) => {
+        dispatch(
+          setWaypoints({
+            ...waypoints,
+            [firstEmptyWaypoint]: {
+              ...waypoints[firstEmptyWaypoint],
+              address: res?.payload?.display_name,
+              coords: newMarker,
+            },
+          })
+        );
+      });
     },
   });
 
@@ -101,14 +92,25 @@ const UserInteraction = () => {
   }, [routingDetails, map]);
   return (
     <>
-      {markerPositionsOnMap?.map((pos, idx) => (
-        <Marker
-          key={idx}
-          position={pos}
-          icon={dotIcon}
-          riseOnHover={true}
-        ></Marker>
-      ))}
+      {Object.entries(waypoints)?.map(
+        ([waypointIndex, waypointValues], idx) => {
+          return (
+            <>
+              {" "}
+              {waypointValues?.coords?.length == 2 ? (
+                <Marker
+                  key={idx}
+                  position={waypointValues?.coords}
+                  icon={dotIcon}
+                  riseOnHover={true}
+                ></Marker>
+              ) : (
+                <></>
+              )}
+            </>
+          );
+        }
+      )}
     </>
   );
 };

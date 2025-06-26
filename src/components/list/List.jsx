@@ -11,13 +11,8 @@ import {
 } from "react-icons/fa";
 import { MdMuseum } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setMarkerPositionsOnMap,
-  setShow,
-  setWaypoints,
-} from "../../redux/features/routing";
+import { setShow, setWaypoints } from "../../redux/features/routing";
 import { fetchUserLocationDetails } from "../../redux/features/routing";
-import { useEffect, useState } from "react";
 function List() {
   let dispatch = useDispatch();
   const { placesOnMap } = useSelector((state) => state.map);
@@ -44,48 +39,49 @@ function List() {
         return <FaQuestionCircle className="mt-2" />;
     }
   };
-  let [addresses, setAddresses] = useState([]);
-  let handlePlaceWithUserLocationRouteOnMap = (place, userLocation) => {
-    setAddresses([]);
+  const handlePlaceWithUserLocationRouteOnMap = async (place, userLocation) => {
+    const clearedWaypoints = Object.entries(waypoints).reduce(
+      (acc, [key, value]) => {
+        acc[key] = { ...value, address: "" };
+        return acc;
+      },
+      {}
+    );
+    dispatch(setWaypoints(clearedWaypoints));
+
     dispatch(setShow(true));
-    let places = [
-      { lat: userLocation?.lat, lon: userLocation?.lng },
-      { lat: place?.lat, lon: place?.lon },
+
+    const places = [
+      {
+        waypointKey: "first waypoint",
+        lat: userLocation?.lat,
+        lon: userLocation?.lng,
+      },
+      {
+        waypointKey: "second waypoint",
+        lat: place?.lat,
+        lon: place?.lon,
+      },
     ];
-    let newMarkers = places?.map((point) => {
-      return Object.values(point);
-    });
-    dispatch(setMarkerPositionsOnMap(newMarkers));
-    places?.forEach(async (point) => {
-      let params = {
-        lat: point?.lat,
-        lon: point?.lon,
+
+    const apiKey = process.env.REACT_APP_RAPID_API_KEY_1;
+    const updatedWaypoints = { ...clearedWaypoints };
+
+    for (const point of places) {
+      const params = {
+        lat: point.lat,
+        lon: point.lon,
         "accept-language": "en",
       };
-      let apiKey = process.env.REACT_APP_RAPID_API_KEY_1;
-      await dispatch(fetchUserLocationDetails({ params, apiKey })).then(
-        (res) => {
-          setAddresses((prev) => {
-            return [...prev, res?.payload?.display_name];
-          });
-        }
-      );
-    });
+
+      const res = await dispatch(fetchUserLocationDetails({ params, apiKey }));
+      updatedWaypoints[point.waypointKey] = {
+        ...updatedWaypoints[point.waypointKey],
+        address: res?.payload?.display_name,
+      };
+    }
+    dispatch(setWaypoints(updatedWaypoints));
   };
-  useEffect(() => {
-    addresses?.forEach((address, addressIndex) => {
-      dispatch(
-        setWaypoints(
-          waypoints?.map((waypoint, waypointIndex) => {
-            if (waypointIndex == addressIndex) {
-              return { ...waypoint, address };
-            }
-            return { ...waypoint };
-          })
-        )
-      );
-    });
-  }, [addresses]);
 
   return (
     <div className="mx-auto places-container mb-3">

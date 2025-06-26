@@ -16,7 +16,6 @@ import { FaMapLocationDot } from "react-icons/fa6";
 import {
   fetchUserLocationDetails,
   fetchAllSearchedLocationsForWaypoint,
-  setMarkerPositionsOnMap,
 } from "../../redux/features/routing";
 import { useMap } from "react-leaflet";
 import { Spinner } from "react-bootstrap";
@@ -38,50 +37,40 @@ function Routing() {
     { id: 3, mode: "bicycle", icon: <IoIosBicycle /> },
     { id: 4, mode: "walk", icon: <FaWalking /> },
   ];
-  let handleRoutingAddress = (e, pointIndex) => {
-    dispatch(
-      setWaypoints(
-        waypoints?.map((point, index) => {
-          if (index === pointIndex) {
-            return {
-              ...point,
-              address: e?.target?.value,
-              showSuggestedPlaces: true,
-            };
-          } else {
-            return point;
-          }
-        })
-      )
-    );
-    let apiKey = process.env.REACT_APP_RAPID_API_KEY_1;
-    let params = {
-      q: e?.target?.value,
+  const handleRoutingAddress = (e, key) => {
+    const address = e.target.value;
+    const updatedWaypoints = {
+      ...waypoints,
+      [key]: {
+        ...waypoints[key],
+        address,
+        showSuggestedPlaces: true,
+      },
+    };
+
+    dispatch(setWaypoints(updatedWaypoints));
+
+    const params = {
+      q: address,
       api: process.env.REACT_APP_GEO_KEO_RAPID_API_KEY_1,
     };
+    const apiKey = process.env.REACT_APP_RAPID_API_KEY_1;
+
     dispatch(
       fetchAllSearchedLocationsForWaypoint({
         params,
         apiKey,
-        index: pointIndex,
+        key,
       })
     );
   };
-  let handleDeleteRoutingAddress = (e, pointIndex) => {
+
+  let handleDeleteRoutingAddress = (e, key) => {
     e.stopPropagation();
     dispatch(resetRoutingDetails());
-    dispatch(clearWayPoint(pointIndex));
-    dispatch(
-      setMarkerPositionsOnMap(
-        markerPositionsOnMap?.length == 1
-          ? []
-          : markerPositionsOnMap?.filter((_, index) => {
-              return index !== pointIndex;
-            })
-      )
-    );
+    dispatch(clearWayPoint({ key }));
   };
-  let handleUserLocation = async (pointIndex) => {
+  let handleUserLocation = async (key) => {
     let params = {
       lat: user?.location?.lat,
       lon: user?.location?.lng,
@@ -92,15 +81,13 @@ function Routing() {
       await dispatch(fetchUserLocationDetails({ params, apiKey })).then(
         (res) => {
           dispatch(
-            setWaypoints(
-              waypoints?.map((point, index) => {
-                if (index === pointIndex) {
-                  return { ...point, address: res?.payload?.display_name };
-                } else {
-                  return point;
-                }
-              })
-            )
+            setWaypoints({
+              ...waypoints,
+              [key]: {
+                ...waypoints[key],
+                address: res?.payload?.display_name,
+              },
+            })
           );
         }
       );
@@ -111,7 +98,7 @@ function Routing() {
       map?.flyTo([user?.location?.lat, user?.location?.lng], map.getZoom());
     }
   };
-  let handleSearchFromSuggestedPlaces = (e, place, pointIndex) => {
+  let handleSearchFromSuggestedPlaces = (e, place, key) => {
     e.stopPropagation();
     let {
       formatted_address,
@@ -120,19 +107,14 @@ function Routing() {
       },
     } = place;
     dispatch(
-      setWaypoints(
-        waypoints?.map((point, index) => {
-          if (index === pointIndex) {
-            return {
-              ...point,
-              address: formatted_address,
-              showSuggestedPlaces: false,
-            };
-          } else {
-            return point;
-          }
-        })
-      )
+      setWaypoints({
+        ...waypoints,
+        [key]: {
+          ...waypoints[key],
+          address: formatted_address,
+          showSuggestedPlaces: false,
+        },
+      })
     );
     if (lat && lng) {
       dispatch(
@@ -144,21 +126,24 @@ function Routing() {
       map?.flyTo([lat, lng], map.getZoom());
     }
   };
-  console.log("markerPositionsOnMap", markerPositionsOnMap);
-
   useEffect(() => {
-    if (markerPositionsOnMap?.length === 2) {
+    let isAllWaypointHasAddress = Object.entries(waypoints).every(
+      ([_, value]) => value.address
+    );
+    if (isAllWaypointHasAddress) {
       let apiKey = process.env.REACT_APP_RAPID_API_KEY_1;
       let params = {
         apiKey: process.env.REACT_APP_GEO_APIFY_RAPID_API_KEY_1,
         mode,
-        waypoints: markerPositionsOnMap
-          ?.map((pos) => `${pos[0]},${pos[1]}`)
+        waypoints: Object.values(waypoints)
+          ?.map((point) => {
+            return `${point?.coords[0]},${point?.coords[1]}`;
+          })
           .join("|"),
       };
       dispatch(fetchRoutingDetails({ params, apiKey }));
     }
-  }, [markerPositionsOnMap, dispatch, mode]);
+  }, [waypoints, dispatch, mode]);
   console.log("routingDetails?.data", routingDetails?.data);
   return (
     <>
@@ -171,14 +156,15 @@ function Routing() {
               onClick={(e) => {
                 e.stopPropagation();
                 dispatch(setShow(true));
-                dispatch(
-                  setWaypoints(
-                    waypoints?.map((point) => {
-                      return { ...point, address: "" };
-                    })
-                  )
+                const updatedWaypoints = Object.entries(waypoints).reduce(
+                  (acc, [key, value]) => {
+                    acc[key] = { ...value, address: "" };
+                    return acc;
+                  },
+                  {}
                 );
-                dispatch(setMarkerPositionsOnMap([]));
+
+                dispatch(setWaypoints(updatedWaypoints));
               }}
             />
           </button>
@@ -191,15 +177,15 @@ function Routing() {
                   className="text-danger fs-3 cursor-pointer"
                   onClick={(e) => {
                     dispatch(setShow(false));
-                    dispatch(
-                      setWaypoints(
-                        waypoints?.map((point) => {
-                          return { ...point, address: "" };
-                        })
-                      )
+                    const updatedWaypoints = Object.entries(waypoints).reduce(
+                      (acc, [key, value]) => {
+                        acc[key] = { ...value, address: "" };
+                        return acc;
+                      },
+                      {}
                     );
+                    dispatch(setWaypoints(updatedWaypoints));
                     dispatch(resetRoutingDetails());
-                    dispatch(setMarkerPositionsOnMap([]));
                     e.stopPropagation();
                   }}
                 />
@@ -224,7 +210,7 @@ function Routing() {
                 })}
               </div>
               <div className="timeline my-4">
-                {[0, 1].map((index) => (
+                {Object.keys(waypoints)?.map((waypoint, index) => (
                   <div key={index}>
                     <div
                       className={`timeline-content-${
@@ -241,18 +227,18 @@ function Routing() {
                       <input
                         type="text"
                         className="form-control mx-2"
-                        value={waypoints[index]?.address}
+                        value={waypoints[waypoint]?.address}
                         onChange={(e) => {
-                          handleRoutingAddress(e, index);
+                          handleRoutingAddress(e, waypoint);
                         }}
                         placeholder="Enter address here Or Click on map"
                       />
-                      {waypoints[index]?.address && (
+                      {waypoints[waypoint]?.address && (
                         <>
                           {" "}
                           <div
                             onClick={(e) => {
-                              handleDeleteRoutingAddress(e, index);
+                              handleDeleteRoutingAddress(e, waypoint);
                             }}
                             className="delete-address-btn bg-danger"
                           >
@@ -261,9 +247,9 @@ function Routing() {
                         </>
                       )}
                     </div>
-                    {waypoints[index]?.showSuggestedPlaces && (
+                    {waypoints[waypoint]?.showSuggestedPlaces && (
                       <>
-                        {waypoints[index].searchedLocations?.loading ? (
+                        {waypoints[waypoint].searchedLocations?.loading ? (
                           <div
                             className="d-flex gap-4 justify-content-center align-items-center py-4 w-100"
                             style={{ color: "white" }}
@@ -273,7 +259,7 @@ function Routing() {
                           </div>
                         ) : (
                           <>
-                            {waypoints[index]?.searchedLocations?.error ? (
+                            {waypoints[waypoint]?.searchedLocations?.error ? (
                               <>
                                 {" "}
                                 <div
@@ -287,14 +273,14 @@ function Routing() {
                               <>
                                 {" "}
                                 {Array.isArray(
-                                  waypoints[index].searchedLocations?.data
+                                  waypoints[waypoint].searchedLocations?.data
                                 ) &&
-                                  waypoints[index].searchedLocations?.data
+                                  waypoints[waypoint].searchedLocations?.data
                                     ?.length > 0 && (
                                     <>
                                       {" "}
                                       {waypoints[
-                                        index
+                                        waypoint
                                       ].searchedLocations?.data?.map(
                                         (place, placeIndex) => {
                                           let { formatted_address } = place;
@@ -311,7 +297,7 @@ function Routing() {
                                                   handleSearchFromSuggestedPlaces(
                                                     e,
                                                     place,
-                                                    index
+                                                    waypoint
                                                   );
                                                 }}
                                               >
@@ -325,7 +311,7 @@ function Routing() {
                                       )}
                                     </>
                                   )}
-                                {waypoints[index].searchedLocations?.data
+                                {waypoints[waypoint].searchedLocations?.data
                                   ?.length === 0 && <>Not found</>}
                               </>
                             )}
@@ -340,34 +326,31 @@ function Routing() {
                 <div className="mx-auto d-flex w-50 px-4 align-items-center justify-content-center">
                   <BiTargetLock
                     className={`fs-3 ${
-                      waypoints[0]?.address ? "disabled-icon" : "cursor-pointer"
+                      waypoints["first waypoint"]?.address
+                        ? "disabled-icon"
+                        : "cursor-pointer"
                     }`}
                     title={
-                      waypoints[0]?.address
+                      waypoints["first waypoint"]?.address
                         ? "your location is already added as 1st waypoint"
                         : "select your location as 1st waypoint"
                     }
-                    disabled={waypoints[0]?.address}
+                    disabled={waypoints["first waypoint"]?.address}
                     onClick={() => {
-                      if (waypoints[0]?.address) {
-                        return;
-                      }
-                      handleUserLocation(0);
+                      handleUserLocation("first waypoint");
                     }}
                   />
                   <FaMapLocationDot
                     className={` fs-3 mx-2 ${
-                      waypoints[0]?.address && waypoints[1]?.address
+                      waypoints["second waypoint"]?.address
                         ? "cursor-pointer"
                         : "disabled-icon"
                     }`}
                     title={
-                      waypoints[0]?.address === "" &&
-                      waypoints[1]?.address === ""
+                      waypoints["second waypoint"]?.address === ""
                         ? "find the route on map"
                         : ""
                     }
-                    onClick={() => {}}
                   />
                 </div>
               </div>
