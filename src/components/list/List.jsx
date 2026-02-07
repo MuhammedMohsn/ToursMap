@@ -46,7 +46,7 @@ function List() {
         acc[key] = { ...value, address: "" };
         return acc;
       },
-      {}
+      {},
     );
     dispatch(setWaypoints(clearedWaypoints));
 
@@ -86,12 +86,14 @@ function List() {
   };
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-  const filteredPlaces = placesOnMap?.data?.filter((item) => item?.name);
+  const filteredPlaces = Array.isArray(placesOnMap?.data)
+    ? placesOnMap.data.filter((item) => item?.name)
+    : [];
   const totalPages = Math.ceil(filteredPlaces?.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedPlaces = filteredPlaces?.slice(
     startIndex,
-    startIndex + itemsPerPage
+    startIndex + itemsPerPage,
   );
   return (
     <div className="mx-auto places-container mb-3">
@@ -137,7 +139,7 @@ function List() {
                             onClick={() => {
                               handlePlaceWithUserLocationRouteOnMap(
                                 place?.point,
-                                location
+                                location,
                               );
                             }}
                           />

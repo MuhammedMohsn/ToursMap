@@ -21,12 +21,11 @@ function App() {
   let userLocation = useSelector((state) => {
     return state?.map?.user?.location;
   });
-  console.log("userLocation", userLocation);
   return (
     <Fragment>
       <div className="App">
         <div className="px-3 w-100 h-70px d-flex align-items-center justify-content-between bg-primary">
-          <h4>tripify</h4>
+          <h4>Tours map</h4>
           <SelectWithSearch />
         </div>
         <div className="row mt-2">

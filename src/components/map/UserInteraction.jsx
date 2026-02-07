@@ -9,7 +9,6 @@ import {
 const UserInteraction = () => {
   let dispatch = useDispatch();
   const { waypoints, routingDetails } = useSelector((state) => state.routing);
-  console.log("waypoints", waypoints);
   const dotIcon = new L.Icon({
     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
     iconSize: [25, 41],
